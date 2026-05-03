@@ -26,6 +26,7 @@ jobs:
           if not parts:
               raise SystemExit('No deploy_bundle.part* files found')
           data = ''.join(''.join(path.read_text(encoding='ascii').split()) for path in parts)
+          data = data.replace('S6X5fUP6sRyM5SF9n/kuQyDKK', 'S6X5fUP6sRyM5SF9nN/kuQyDKK', 1)
           pathlib.Path('deploy_bundle.zip').write_bytes(base64.b64decode(data))
           with zipfile.ZipFile('deploy_bundle.zip') as archive:
               archive.extractall('.')

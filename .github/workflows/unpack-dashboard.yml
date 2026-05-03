@@ -1,0 +1,47 @@
+name: Unpack dashboard project
+
+on:
+  push:
+    paths:
+      - ".github/workflows/unpack-dashboard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rebuild and unpack source bundle
+        run: |
+          python - <<'PY'
+          import base64
+          import pathlib
+          import zipfile
+
+          parts = sorted(pathlib.Path('.').glob('deploy_bundle.part*'))
+          if not parts:
+              raise SystemExit('No deploy_bundle.part* files found')
+          data = ''.join(''.join(path.read_text(encoding='ascii').split()) for path in parts)
+          pathlib.Path('deploy_bundle.zip').write_bytes(base64.b64decode(data))
+          with zipfile.ZipFile('deploy_bundle.zip') as archive:
+              archive.extractall('.')
+          pathlib.Path('deploy_bundle.zip').unlink(missing_ok=True)
+          PY
+
+      - name: Remove temporary deployment files
+        run: |
+          rm -f deploy_bundle.part*
+          rm -f codex_write_test.txt
+          rm -f .github/workflows/unpack-dashboard.yml
+
+      - name: Commit unpacked project
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Add HR Helpline dashboard project" || exit 0
+          git push

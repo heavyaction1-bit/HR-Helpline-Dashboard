@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local Streamlit secrets
+.streamlit/secrets.toml
+
+# Local environment variables and credentials
+.env
+*.key
+
+# Local prototype data - may contain sensitive HR data
+data/*.sqlite
+data/*.db
+data/*.sqlite3
+data/*.xlsx
+data/*.xlsm
+data/*.xls
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
